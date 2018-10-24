@@ -1,0 +1,27 @@
+on property:persist.log.tag.camtest=start
+    setprop log.tag.camtest start
+
+# enable, prep and start camtestd service
+on load_persist_props_action
+    setprop log.tag.camtest.enable true
+
+on property:log.tag.camtest.enable=true && property:log.tag.camtest=start
+    start camtestd
+
+on property:log.tag.camtest=stop
+    setprop persist.log.tag.camtest ""
+    stop camtestd
+    setprop log.tag.camtest ""
+    setprop log.tag.camtest.cmd ""
+    setprop log.tag.camtest.cmd.last ""
+
+on property:log.tag.camtest.enable=false
+    stop camtestd
+
+# camtestd service
+service camtestd /system/bin/cameratest
+    class late_start
+    disabled
+    user root
+    group root
+    writepid /dev/cpuset/system-background/tasks
